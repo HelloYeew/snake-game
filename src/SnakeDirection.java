@@ -1,3 +1,6 @@
+/**
+ * Enum for the direction of the snake.
+ */
 public enum SnakeDirection {
     UP,
     DOWN,
@@ -5,19 +8,21 @@ public enum SnakeDirection {
     RIGHT
 }
 
+/**
+ * Utility class for the SnakeDirection enum.
+ */
 class SnakeDirectionUtil {
+    /**
+     * Returns the opposite direction of the given direction.
+     * @param direction The direction to get the opposite of.
+     * @return The opposite direction.
+     */
     public static SnakeDirection getOppositeDirection(SnakeDirection direction) {
-        switch (direction) {
-            case UP:
-                return SnakeDirection.DOWN;
-            case DOWN:
-                return SnakeDirection.UP;
-            case LEFT:
-                return SnakeDirection.RIGHT;
-            case RIGHT:
-                return SnakeDirection.LEFT;
-            default:
-                return null;
-        }
+        return switch (direction) {
+            case UP -> SnakeDirection.DOWN;
+            case DOWN -> SnakeDirection.UP;
+            case LEFT -> SnakeDirection.RIGHT;
+            case RIGHT -> SnakeDirection.LEFT;
+        };
     }
 }
