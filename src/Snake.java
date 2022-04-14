@@ -53,18 +53,10 @@ public class Snake {
         // and adding a new position to the front of the body
         // Remove the last position from the body
         switch (this.direction) {
-            case LEFT:
-                this.body.add(0, new Position(this.body.get(0).getX(), this.body.get(0).getY() - 1));
-                break;
-            case RIGHT:
-                this.body.add(0, new Position(this.body.get(0).getX(), this.body.get(0).getY() + 1));
-                break;
-            case UP:
-                this.body.add(0, new Position(this.body.get(0).getX() - 1, this.body.get(0).getY()));
-                break;
-            case DOWN:
-                this.body.add(0, new Position(this.body.get(0).getX() + 1, this.body.get(0).getY()));
-                break;
+            case LEFT -> this.body.add(0, new Position(this.body.get(0).getX(), this.body.get(0).getY() - 1));
+            case RIGHT -> this.body.add(0, new Position(this.body.get(0).getX(), this.body.get(0).getY() + 1));
+            case UP -> this.body.add(0, new Position(this.body.get(0).getX() - 1, this.body.get(0).getY()));
+            case DOWN -> this.body.add(0, new Position(this.body.get(0).getX() + 1, this.body.get(0).getY()));
         }
 
         this.body.remove(this.body.size() - 1);
@@ -74,18 +66,14 @@ public class Snake {
         // Add a body part to the end of the snake
         // Depending on the direction
         switch (this.direction) {
-            case LEFT:
-                this.body.add(new Position(this.body.get(this.body.size() - 1).getX(), this.body.get(this.body.size() - 1).getY() + 1));
-                break;
-            case RIGHT:
-                this.body.add(new Position(this.body.get(this.body.size() - 1).getX(), this.body.get(this.body.size() - 1).getY() - 1));
-                break;
-            case UP:
-                this.body.add(new Position(this.body.get(this.body.size() - 1).getX() + 1, this.body.get(this.body.size() - 1).getY()));
-                break;
-            case DOWN:
-                this.body.add(new Position(this.body.get(this.body.size() - 1).getX() - 1, this.body.get(this.body.size() - 1).getY()));
-                break;
+            case LEFT ->
+                    this.body.add(new Position(this.body.get(this.body.size() - 1).getX(), this.body.get(this.body.size() - 1).getY() + 1));
+            case RIGHT ->
+                    this.body.add(new Position(this.body.get(this.body.size() - 1).getX(), this.body.get(this.body.size() - 1).getY() - 1));
+            case UP ->
+                    this.body.add(new Position(this.body.get(this.body.size() - 1).getX() + 1, this.body.get(this.body.size() - 1).getY()));
+            case DOWN ->
+                    this.body.add(new Position(this.body.get(this.body.size() - 1).getX() - 1, this.body.get(this.body.size() - 1).getY()));
         }
     }
 }
