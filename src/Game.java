@@ -40,14 +40,19 @@ public class Game extends JFrame implements Observer {
         scoreLabel.setForeground(Color.WHITE);
         add(topPanel, BorderLayout.NORTH);
 
-        // Need to disable restart button since its listener is conflicting with the key listener
         // Add restart button at the bottom of the screen
-//        JPanel bottomPanel = new JPanel();
-//        bottomPanel.setBackground(Color.BLACK);
-//        bottomPanel.setLayout(new FlowLayout());
-//        bottomPanel.add(restartButton);
-//        add(bottomPanel, BorderLayout.SOUTH);
-//        initButtons();
+        JPanel bottomPanel = new JPanel();
+        bottomPanel.setBackground(Color.BLACK);
+        bottomPanel.setLayout(new FlowLayout());
+        bottomPanel.add(restartButton);
+        add(bottomPanel, BorderLayout.SOUTH);
+        initButtons();
+
+        // Since stupid Java cannot use KeyListener with ActionListener
+        // But I found a way from Japanese StackOverflow (teratail)
+        // Just set focusable to true and here you go
+        // https://teratail.com/questions/341329
+        setFocusable(true);
 
         setResizable(false);
         setAlwaysOnTop(true);
@@ -125,7 +130,7 @@ public class Game extends JFrame implements Observer {
                     playfield.snake.setDirection(SnakeDirection.RIGHT);
                 }
             } else if (e.getKeyCode() == 192) {
-                // 192 is the keycode for the tilde key
+                // 192 is the keycode for the tilde key (~ key)
                 restartGame();
             }
         }
