@@ -1,5 +1,4 @@
 import java.util.ArrayList;
-import java.util.List;
 
 public class Snake {
     public ArrayList<Position> body;
@@ -17,25 +16,6 @@ public class Snake {
             // print each body part
             System.out.println(this.body.get(i));
         }
-    }
-
-    public SnakeDirection checkTailDirection() {
-        if (this.body.size() > 1) {
-            if (this.body.get(body.size() - 2).getX() == this.body.get(body.size() - 1).getX() + 1) {
-                return SnakeDirection.LEFT;
-            } else if (this.body.get(body.size() - 2).getX() == this.body.get(body.size() - 1).getX() - 1) {
-                return SnakeDirection.RIGHT;
-            } else if (this.body.get(body.size() - 2).getY() == this.body.get(body.size() - 1).getY() + 1) {
-                return SnakeDirection.UP;
-            } else if (this.body.get(body.size() - 2).getY() == this.body.get(body.size() - 1).getY() - 1) {
-                return SnakeDirection.DOWN;
-            }
-        } else {
-            // Currently the snake is only one body part long
-            // Return the opposite direction of the current direction
-            return SnakeDirectionUtil.getOppositeDirection(this.direction);
-        }
-        return direction;
     }
 
     public SnakeDirection getDirection() {

@@ -7,7 +7,7 @@ import java.util.Observer;
 
 public class Game extends JFrame implements Observer {
 
-    public int PLAYFIELD_SIZE = 20;
+    public int PLAYFIELD_SIZE = 40;
 
     private World world;
 
@@ -50,16 +50,15 @@ public class Game extends JFrame implements Observer {
             int x = col * CELL_SIZE;
             int y = row * CELL_SIZE;
 
-            Cell cell = playfield.getCell(row, col);
-
-            if (cell.hasFruit) {
+            // paint the fruit position
+            if (playfield.getFruitPosition().getX() == row && playfield.getFruitPosition().getY() == col) {
                 g.setColor(Color.RED);
                 g.fillRect(x, y, CELL_SIZE, CELL_SIZE);
             }
 
-            for (int i = 0; i < playfield.snake.body.size(); i++) {
-                Position pos = playfield.snake.body.get(i);
-                if (pos.getX() == row && pos.getY() == col) {
+            // paint the snake position
+            for (Position position : playfield.snake.body) {
+                if (position.getX() == row && position.getY() == col) {
                     g.setColor(Color.GREEN);
                     g.fillRect(x, y, CELL_SIZE, CELL_SIZE);
                 }

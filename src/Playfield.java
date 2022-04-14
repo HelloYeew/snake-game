@@ -1,27 +1,16 @@
+import java.util.ArrayList;
+
 public class Playfield {
     private final int size;
 
-    private Cell[][] cells;
+    private Position fruitPosition;
 
     public Snake snake;
 
     public Playfield(int size) {
         this.size = size;
-        initCells();
         initSnake();
         randomFruit();
-    }
-
-    /**
-     * Initialize the cells.
-     */
-    private void initCells() {
-        cells = new Cell[size][size];
-        for (int i = 0; i < size; i++) {
-            for (int j = 0; j < size; j++) {
-                cells[i][j] = new Cell();
-            }
-        }
     }
 
     private void initSnake() {
@@ -42,24 +31,18 @@ public class Playfield {
     private void randomFruit() {
         int x = (int) (Math.random() * size);
         int y = (int) (Math.random() * size);
-        cells[x][y].setHasFruit(true);
+        fruitPosition = new Position(x, y);
         System.out.println("Fruit at " + x + "," + y);
     }
 
-    private void removeFruit() {
-        for (int i = 0; i < size; i++) {
-            for (int j = 0; j < size; j++) {
-                cells[i][j].setHasFruit(false);
-            }
-        }
+    public Position getFruitPosition() {
+        return fruitPosition;
     }
 
     public void update() {
         moveSnake();
         if (isEatenFood()) {
-            System.out.println(snake.checkTailDirection());
             // remove the fruit
-            removeFruit();
             randomFruit();
             // grow the snake
             snake.grow();
@@ -71,20 +54,13 @@ public class Playfield {
         snake.moveBody();
     }
 
-    public Cell getCell(int row, int col) {
-        return cells[row][col];
-    }
-
     /*
      * Check that on is the snake's head position has a fruit ot not.
      */
     public Boolean isEatenFood() {
-        // to prevent array out of bounds exception
-        if (snake.body.get(0).getX() < 0 || snake.body.get(0).getX() >= size ||
-                snake.body.get(0).getY() < 0 || snake.body.get(0).getY() >= size) {
-            return false;
-        }
-        return cells[snake.body.get(0).getX()][snake.body.get(0).getY()].hasFruit;
+        // check if the snake's head position is the same as the fruit's position
+        return snake.body.get(0).getX() == fruitPosition.getX() &&
+                snake.body.get(0).getY() == fruitPosition.getY();
     }
 
     public void isCollision() {
