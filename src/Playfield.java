@@ -38,10 +38,6 @@ public class Playfield {
         System.out.println("Snake at " + middle + "," + (middle - 2));
     }
 
-    public void setSnakeDirection(SnakeDirection direction) {
-        snake.setDirection(direction);
-    }
-
     /**
      * Random the fruit position in the playfield.
      */
@@ -96,9 +92,7 @@ public class Playfield {
     public void isCollision() {
         // check if the snake has collided with itself or the walls
         for (int i = 1; i < snake.body.size(); i++) {
-            if (snake.body.get(0).equals(snake.body.get(i))) {
-                System.out.println("Collision with self");
-            } else if (snake.body.get(0).getX() < 0 || snake.body.get(0).getX() >= size ||
+            if (snake.body.get(0).getX() < 0 || snake.body.get(0).getX() >= size ||
                     snake.body.get(0).getY() < 0 || snake.body.get(0).getY() >= size) {
                 System.out.println("Collision with wall");
             }
