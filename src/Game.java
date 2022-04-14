@@ -7,20 +7,44 @@ import java.awt.event.KeyEvent;
 import java.util.Observable;
 import java.util.Observer;
 
+/**
+ * The game class.
+ */
 public class Game extends JFrame implements Observer {
 
+    /**
+     * The number of the rows and columns of the game board.
+     */
     public int PLAYFIELD_SIZE = 20;
 
+    /**
+     * The score of the game. Update when the snake eats a fruit.
+     */
     private int score = 0;
 
+    /**
+     * The world object that act as the observer to update the time in the game.
+     */
     private World world;
 
+    /**
+     * The playfield of the game that contains almost everything.
+     */
     private Playfield playfield;
 
+    /**
+     * UI that will be displayed the playfield to window.
+     */
     private PlayfieldUI playfield_ui;
 
+    /**
+     * Label that will be displayed the score to window.
+     */
     private JLabel scoreLabel = new JLabel("Score: " + score);
 
+    /**
+     * Button to restart the game.
+     */
     private JButton restartButton = new JButton("Restart");
 
     public Game() {
@@ -57,22 +81,39 @@ public class Game extends JFrame implements Observer {
         setResizable(false);
         setAlwaysOnTop(true);
         pack();
-
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+        // request to focus on the game window to avoid the annoying
+        requestFocus();
     }
 
+    /**
+     * Initialize the buttons listeners.
+     */
     private void initButtons() {
         restartButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 restartGame();
+                // request to focus on the game window to avoid the annoying
+                requestFocus();
             }
         });
     }
 
+    /**
+     * The class that represent the playfield UI that will be displayed to the window.
+     */
     class PlayfieldUI extends JPanel {
+
+        /**
+         * The real pixel size of the grid.
+         */
         public int CELL_SIZE = 20;
 
+        /**
+         * The constructor of the UI. Will set the size to the preferred size and add the listener of the snake.
+         */
         public PlayfieldUI() {
             setPreferredSize(new Dimension(PLAYFIELD_SIZE * CELL_SIZE, PLAYFIELD_SIZE * CELL_SIZE));
             addKeyListener(new SnakeController());
@@ -88,6 +129,12 @@ public class Game extends JFrame implements Observer {
             }
         }
 
+        /**
+         * Paint the cells of the playfield.
+         * @param g The graphics object to paint on.
+         * @param row The row of the cell.
+         * @param col The column of the cell.
+         */
         private void paintCells(Graphics g, int row, int col) {
             int x = col * CELL_SIZE;
             int y = row * CELL_SIZE;
@@ -108,6 +155,9 @@ public class Game extends JFrame implements Observer {
         }
     }
 
+    /**
+     * The class that represent the controller of the snake.
+     */
     class SnakeController extends KeyAdapter {
         @Override
         public void keyPressed(KeyEvent e) {
@@ -159,16 +209,21 @@ public class Game extends JFrame implements Observer {
         repaint();
     }
 
+    /**
+     * Start the game.
+     */
     public void startGame() {
         world.start();
         setVisible(true);
     }
 
+    /**
+     * Restart the game.
+     */
     public void restartGame() {
         playfield = new Playfield(PLAYFIELD_SIZE);
         score = 0;
         scoreLabel.setText("Score: " + score);
-        // To make the world start again without conflict
         world.continueGame();
         repaint();
     }

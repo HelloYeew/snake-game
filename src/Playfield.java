@@ -1,42 +1,64 @@
+/**
+ * Class representing the playfield of the game. It will contain all object that are in the game.
+ */
 public class Playfield {
+
+    /**
+     * The width of the playfield.
+     * This value mean the number of columns, not the real pixel width.
+     */
     private final int size;
 
+    /**
+     * The fruit position in the playfield.
+     */
     private Position fruitPosition;
 
+    /**
+     * Snake in the playfield.
+     */
     public Snake snake;
 
+    /**
+     * Constructor of the playfield.
+     */
     public Playfield(int size) {
         this.size = size;
         initSnake();
         randomFruit();
     }
 
+    /**
+     * Initialize the snake in the playfield and set the spawn position to the middle of the playfield.
+     */
     private void initSnake() {
-        // spawn the snake at the center of the playfield
         snake = new Snake();
-        int middle = (int)(size / 2);
-        snake.addBodyPart(new Position(middle, middle));
-        snake.addBodyPart(new Position(middle, middle - 1));
-        snake.addBodyPart(new Position(middle, middle - 2));
-        System.out.println("Snake at " + middle + "," + middle);
-        System.out.println("Snake at " + middle + "," + (middle - 1));
-        System.out.println("Snake at " + middle + "," + (middle - 2));
+        int middle = size / 2;
+        // Normally the snake game start with snake's head at the middle of the playfield
+        // and the snake's body is at the left of the head with 3 width.
+        for (int i = 1; i < 3; i++) {
+            snake.addBodyPart(new Position(middle, middle - i));
+        }
     }
 
     /**
      * Random the fruit position in the playfield.
      */
     public void randomFruit() {
-        int x = (int) (Math.random() * size);
-        int y = (int) (Math.random() * size);
-        fruitPosition = new Position(x, y);
-        System.out.println("Fruit at " + x + "," + y);
+        fruitPosition = new Position((int) (Math.random() * size), (int) (Math.random() * size));
     }
 
+    /**
+     * Return the position of the fruit.
+     * @return The position of the fruit.
+     */
     public Position getFruitPosition() {
         return fruitPosition;
     }
 
+    /**
+     * Call the move method of the snake.
+     */
     public void moveSnake() {
         snake.moveBody();
     }
@@ -50,6 +72,10 @@ public class Playfield {
                 snake.body.get(0).getY() == fruitPosition.getY();
     }
 
+    /**
+     * Check if the snake is collided with the wall.
+     * @return True if the snake is collided with the wall, false otherwise.
+     */
     public Boolean isCollisionToWall() {
         // check if the snake has collided with the walls
         for (int i = 1; i < snake.body.size(); i++) {
@@ -61,7 +87,10 @@ public class Playfield {
         return false;
     }
 
-
+    /**
+     * Check if the snake is collided with its body.
+     * @return True if the snake is collided with its body, false otherwise.
+     */
     public Boolean isCollisionItself() {
         // check if the snake has collided with itself
         for (int i = 1; i < snake.body.size(); i++) {
