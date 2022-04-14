@@ -1,4 +1,4 @@
-import java.util.ArrayList;
+import java.util.List;
 
 public class Playfield {
     private final int size;
@@ -28,7 +28,7 @@ public class Playfield {
     /**
      * Random the fruit position in the playfield.
      */
-    private void randomFruit() {
+    public void randomFruit() {
         int x = (int) (Math.random() * size);
         int y = (int) (Math.random() * size);
         fruitPosition = new Position(x, y);
@@ -37,17 +37,6 @@ public class Playfield {
 
     public Position getFruitPosition() {
         return fruitPosition;
-    }
-
-    public void update() {
-        moveSnake();
-        if (isEatenFood()) {
-            // remove the fruit
-            randomFruit();
-            // grow the snake
-            snake.grow();
-        }
-        isCollision();
     }
 
     public void moveSnake() {
@@ -63,13 +52,27 @@ public class Playfield {
                 snake.body.get(0).getY() == fruitPosition.getY();
     }
 
-    public void isCollision() {
-        // check if the snake has collided with itself or the walls
+    public Boolean isCollisionToWall() {
+        // check if the snake has collided with the walls
         for (int i = 1; i < snake.body.size(); i++) {
             if (snake.body.get(0).getX() < 0 || snake.body.get(0).getX() >= size ||
                     snake.body.get(0).getY() < 0 || snake.body.get(0).getY() >= size) {
-                System.out.println("Collision with wall");
+                return true;
             }
         }
+        return false;
+    }
+
+
+    public Boolean isCollisionItself() {
+        // check if the snake has collided with itself
+        for (int i = 1; i < snake.body.size(); i++) {
+            if (snake.body.get(0).getX() == snake.body.get(i).getX() &&
+                    snake.body.get(0).getY() == snake.body.get(i).getY()) {
+                System.out.println("Collision with self");
+                return true;
+            }
+        }
+        return false;
     }
 }

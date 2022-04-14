@@ -45,15 +45,16 @@ public class Snake {
     public void grow() {
         // Add a body part to the end of the snake
         // Depending on the direction
+        // But we need to check on growing direction by the last body part and the direction
+        // If the last body part is in the same direction as the direction,
+        // we need to add a body part in the opposite direction
+        // If the last body part is in the opposite direction,
+        // we need to add a body part in the same direction
         switch (this.direction) {
-            case LEFT ->
-                    this.body.add(new Position(this.body.get(this.body.size() - 1).getX(), this.body.get(this.body.size() - 1).getY() + 1));
-            case RIGHT ->
-                    this.body.add(new Position(this.body.get(this.body.size() - 1).getX(), this.body.get(this.body.size() - 1).getY() - 1));
-            case UP ->
-                    this.body.add(new Position(this.body.get(this.body.size() - 1).getX() + 1, this.body.get(this.body.size() - 1).getY()));
-            case DOWN ->
-                    this.body.add(new Position(this.body.get(this.body.size() - 1).getX() - 1, this.body.get(this.body.size() - 1).getY()));
+            case LEFT -> this.body.add(new Position(this.body.get(this.body.size() - 1).getX(), this.body.get(this.body.size() - 1).getY() + 1));
+            case RIGHT -> this.body.add(new Position(this.body.get(this.body.size() - 1).getX(), this.body.get(this.body.size() - 1).getY() - 1));
+            case UP -> this.body.add(new Position(this.body.get(this.body.size() - 1).getX() + 1, this.body.get(this.body.size() - 1).getY()));
+            case DOWN -> this.body.add(new Position(this.body.get(this.body.size() - 1).getX() - 1, this.body.get(this.body.size() - 1).getY()));
         }
     }
 }

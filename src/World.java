@@ -7,7 +7,7 @@ public class World extends Observable {
 
     private Thread thread;
 
-    private long delayed = 100;
+    private long delayed = 200;
 
     public World() {
         this.tick = 0;
@@ -15,20 +15,22 @@ public class World extends Observable {
     }
 
     public void start() {
-        this.thread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                while (!isOver) {
-                    tick();
-                    try {
-                        Thread.sleep(delayed);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
+        this.isOver = false;
+        this.thread = new Thread(() -> {
+            while (!isOver) {
+                tick();
+                try {
+                    Thread.sleep(delayed);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
             }
         });
         this.thread.start();
+    }
+
+    public void continueGame() {
+        this.isOver = false;
     }
 
     public void stop() {
