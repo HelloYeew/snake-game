@@ -16,6 +16,11 @@ public class World extends Observable {
     private Boolean isRunning;
 
     /**
+     * Mark the state when the game want to prevent an input.
+     */
+    private Boolean isLockInput;
+
+    /**
      * Thread that use to always update the game time.
      */
     private Thread thread;
@@ -40,8 +45,11 @@ public class World extends Observable {
     public void start() {
         this.isRunning = true;
         this.thread = new Thread(() -> {
-            while (isRunning) {
-                tick();
+            while (true) {
+                if (isRunning) {
+                    tick();
+                    notifyObservers();
+                }
                 try {
                     Thread.sleep(delayed);
                 } catch (InterruptedException e) {
@@ -88,5 +96,34 @@ public class World extends Observable {
      */
     public void setDelayed(long delayed) {
         this.delayed = delayed;
+    }
+
+    /**
+     * Get the state of the lock input.
+     * @return The state of the lock input.
+     */
+    public Boolean getLockInput() {
+        return isLockInput;
+    }
+
+    /**
+     * Set the state of the lock input.
+     */
+    public void setLockInput(Boolean lockInput) {
+        isLockInput = lockInput;
+    }
+
+    /**
+     * Mark isLockInput to true to prevent the input of the user.
+     */
+    public void lockInput() {
+        isLockInput = true;
+    }
+
+    /**
+     * Mark isLockInput to false to allow the input of the user.
+     */
+    public void unlockInput() {
+        isLockInput = false;
     }
 }

@@ -161,25 +161,32 @@ public class Game extends JFrame implements Observer {
     class SnakeController extends KeyAdapter {
         @Override
         public void keyPressed(KeyEvent e) {
-            // From real snake game:
-            // Player cannot move in opposite direction
-            if (e.getKeyCode() == KeyEvent.VK_UP) {
-                if (playfield.snake.getDirection() != SnakeDirection.DOWN) {
-                    playfield.snake.setDirection(SnakeDirection.UP);
+            if (!world.getLockInput()) {
+                // From real snake game:
+                // Player cannot move in opposite direction
+                if (e.getKeyCode() == KeyEvent.VK_UP) {
+                    if (playfield.snake.getDirection() != SnakeDirection.DOWN) {
+                        playfield.snake.setDirection(SnakeDirection.UP);
+                    }
+                } else if (e.getKeyCode() == KeyEvent.VK_DOWN) {
+                    if (playfield.snake.getDirection() != SnakeDirection.UP) {
+                        playfield.snake.setDirection(SnakeDirection.DOWN);
+                    }
+                } else if (e.getKeyCode() == KeyEvent.VK_LEFT) {
+                    if (playfield.snake.getDirection() != SnakeDirection.RIGHT) {
+                        playfield.snake.setDirection(SnakeDirection.LEFT);
+                    }
+                } else if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
+                    if (playfield.snake.getDirection() != SnakeDirection.LEFT) {
+                        playfield.snake.setDirection(SnakeDirection.RIGHT);
+                    }
                 }
-            } else if (e.getKeyCode() == KeyEvent.VK_DOWN) {
-                if (playfield.snake.getDirection() != SnakeDirection.UP) {
-                    playfield.snake.setDirection(SnakeDirection.DOWN);
-                }
-            } else if (e.getKeyCode() == KeyEvent.VK_LEFT) {
-                if (playfield.snake.getDirection() != SnakeDirection.RIGHT) {
-                    playfield.snake.setDirection(SnakeDirection.LEFT);
-                }
-            } else if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
-                if (playfield.snake.getDirection() != SnakeDirection.LEFT) {
-                    playfield.snake.setDirection(SnakeDirection.RIGHT);
-                }
-            } else if (e.getKeyCode() == 192) {
+                world.lockInput();
+            } else {
+                System.out.println("Input locked");
+            }
+
+            if (e.getKeyCode() == 192) {
                 // 192 is the keycode for the tilde key (~ key)
                 restartGame();
             }
@@ -201,11 +208,20 @@ public class Game extends JFrame implements Observer {
         }
         if (playfield.isCollisionToWall()) {
             JOptionPane.showMessageDialog(this, "Game Over!", "You hit the wall!", JOptionPane.WARNING_MESSAGE);
+            System.out.println("Snake body list :");
+            for (int i = 0; i < playfield.snake.body.size(); i++) {
+                System.out.println(playfield.snake.body.get(i));
+            }
             world.stop();
         } else if (playfield.isCollisionItself()) {
             JOptionPane.showMessageDialog(this, "Game Over!", "You hit yourself!", JOptionPane.WARNING_MESSAGE);
+            System.out.println("Snake body list :");
+            for (int i = 0; i < playfield.snake.body.size(); i++) {
+                System.out.println(playfield.snake.body.get(i));
+            }
             world.stop();
         }
+        world.unlockInput();
         repaint();
     }
 
