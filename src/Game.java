@@ -161,6 +161,8 @@ public class Game extends JFrame implements Observer {
     class SnakeController extends KeyAdapter {
         @Override
         public void keyPressed(KeyEvent e) {
+            // To prevent player to swiftly change direction and make the snake can rotate back to collision with itself
+            // We will get the only first input and ignore the rest in the tick.
             if (!world.getLockInput()) {
                 // From real snake game:
                 // Player cannot move in opposite direction
@@ -209,14 +211,14 @@ public class Game extends JFrame implements Observer {
         if (playfield.isCollisionToWall()) {
             JOptionPane.showMessageDialog(this, "Game Over!", "You hit the wall!", JOptionPane.WARNING_MESSAGE);
             System.out.println("Snake body list :");
-            for (int i = 0; i < playfield.snake.body.size(); i++) {
+            for (int i = 0; i < playfield.snake.length(); i++) {
                 System.out.println(playfield.snake.body.get(i));
             }
             world.stop();
         } else if (playfield.isCollisionItself()) {
             JOptionPane.showMessageDialog(this, "Game Over!", "You hit yourself!", JOptionPane.WARNING_MESSAGE);
             System.out.println("Snake body list :");
-            for (int i = 0; i < playfield.snake.body.size(); i++) {
+            for (int i = 0; i < playfield.snake.length(); i++) {
                 System.out.println(playfield.snake.body.get(i));
             }
             world.stop();

@@ -36,7 +36,7 @@ public class Playfield {
         int middle = size / 2;
         // Normally the snake game start with snake's head at the middle of the playfield
         // and the snake's body is at the left of the head with 3 width.
-        for (int i = 1; i < 3; i++) {
+        for (int i = 1; i <= 3; i++) {
             snake.addBodyPart(new Position(middle, middle - i));
         }
     }
@@ -78,7 +78,7 @@ public class Playfield {
      */
     public Boolean isCollisionToWall() {
         // check if the snake has collided with the walls
-        for (int i = 1; i < snake.body.size(); i++) {
+        for (int i = 1; i < snake.length(); i++) {
             if (snake.body.get(0).getX() < 0 || snake.body.get(0).getX() >= size ||
                     snake.body.get(0).getY() < 0 || snake.body.get(0).getY() >= size) {
                 return true;
@@ -93,7 +93,7 @@ public class Playfield {
      */
     public Boolean isCollisionItself() {
         // check if the snake has collided with itself
-        for (int i = 1; i < snake.body.size(); i++) {
+        for (int i = 1; i < snake.length(); i++) {
             if (snake.body.get(0).getX() == snake.body.get(i).getX() &&
                     snake.body.get(0).getY() == snake.body.get(i).getY()) {
                 System.out.println("Collision with self");

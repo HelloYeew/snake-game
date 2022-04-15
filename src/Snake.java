@@ -54,6 +54,14 @@ public class Snake {
     }
 
     /**
+     * Return the length of the snake that is the size of the body list.
+     * @return The length of the snake.
+     */
+    public int length() {
+        return this.body.size();
+    }
+
+    /**
      * Update the snake position.
      */
     public void moveBody() {
