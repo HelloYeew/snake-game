@@ -210,17 +210,19 @@ public class Game extends JFrame implements Observer {
         }
         if (playfield.isCollisionToWall()) {
             JOptionPane.showMessageDialog(this, "Game Over!", "You hit the wall!", JOptionPane.WARNING_MESSAGE);
-            System.out.println("Snake body list :");
-            for (int i = 0; i < playfield.snake.length(); i++) {
-                System.out.println(playfield.snake.body.get(i));
-            }
+            // For debugging purpose
+            // System.out.println("Snake body list :");
+            // for (int i = 0; i < playfield.snake.length(); i++) {
+            //     System.out.println(playfield.snake.body.get(i));
+            // }
             world.stop();
         } else if (playfield.isCollisionItself()) {
             JOptionPane.showMessageDialog(this, "Game Over!", "You hit yourself!", JOptionPane.WARNING_MESSAGE);
-            System.out.println("Snake body list :");
-            for (int i = 0; i < playfield.snake.length(); i++) {
-                System.out.println(playfield.snake.body.get(i));
-            }
+            // For debugging purpose
+            // System.out.println("Snake body list :");
+            // for (int i = 0; i < playfield.snake.length(); i++) {
+            //    System.out.println(playfield.snake.body.get(i));
+            // }
             world.stop();
         }
         world.unlockInput();

@@ -30,10 +30,7 @@ public class Snake {
      */
     public void addBodyPart(Position position) {
         this.body.add(position);
-        for (int i = 0; i < this.body.size() - 1; i++) {
-            // print each body part
-            System.out.println(this.body.get(i));
-        }
+        System.out.println("Added new body part at " + position);
     }
 
     /**
