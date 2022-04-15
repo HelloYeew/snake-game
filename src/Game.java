@@ -26,7 +26,7 @@ public class Game extends JFrame implements Observer {
     /**
      * Life drain rate per game tick.
      */
-    public int LIFE_DRAIN = 1;
+    public int LIFE_DRAIN = 4;
 
     /**
      * The score of the game. Update when the snake eats a fruit.
@@ -241,7 +241,10 @@ public class Game extends JFrame implements Observer {
                 restartGame();
             } else if (e.getKeyCode() == KeyEvent.VK_SPACE) {
                 // Space key is the pause key
-                pauseGame();
+                // TODO: Spam space on collide to wall or itself still can make the game continue. Must make isGameOver flag to prevent this.
+                if (!world.getGameOver()) {
+                    pauseGame();
+                }
             }
         }
     }
@@ -258,34 +261,15 @@ public class Game extends JFrame implements Observer {
         lifeBar.setValue(life);
         lifeBar.setString(life + " / " + LIFE_MAX);
         // Check if the game is over
-        // TODO: Fix these duplicate code
         if (playfield.isCollisionToWall()) {
             JOptionPane.showMessageDialog(this, "Game Over!", "You hit the wall!", JOptionPane.WARNING_MESSAGE);
-            System.out.println("Snake body list :");
-            for (int i = 0; i < playfield.snake.length(); i++) {
-                System.out.println(playfield.snake.body.get(i));
-            }
-            gameStatusLabel.setText("Game Over!");
-            gameStatusLabel.setForeground(Color.RED);
-            pauseButton.setEnabled(false);
-            world.stop();
+            setToGameOverState();
         } else if (playfield.isCollisionItself()) {
             JOptionPane.showMessageDialog(this, "Game Over!", "You hit yourself!", JOptionPane.WARNING_MESSAGE);
-            // For debugging purpose
-            System.out.println("Snake body list :");
-            for (int i = 0; i < playfield.snake.length(); i++) {
-                System.out.println(playfield.snake.body.get(i));
-            }
-            gameStatusLabel.setText("Game Over!");
-            gameStatusLabel.setForeground(Color.RED);
-            pauseButton.setEnabled(false);
-            world.stop();
+            setToGameOverState();
         } else if (lifeBar.getValue() <= 0) {
             JOptionPane.showMessageDialog(this, "Game Over!", "You ran out of life!", JOptionPane.WARNING_MESSAGE);
-            gameStatusLabel.setText("Game Over!");
-            gameStatusLabel.setForeground(Color.RED);
-            pauseButton.setEnabled(false);
-            world.stop();
+            setToGameOverState();
         }
         playfield_ui.repaint();
         playfield.moveSnake();
@@ -345,7 +329,23 @@ public class Game extends JFrame implements Observer {
         pauseButton.setText("Pause");
         world.resetTick();
         world.continueGame();
+        world.setGameOver(false);
         repaint();
+    }
+
+    /**
+     * Set the game environment to the game over state.
+     */
+    public void setToGameOverState() {
+        System.out.println("Snake body list :");
+        for (int i = 0; i < playfield.snake.length(); i++) {
+            System.out.println(playfield.snake.body.get(i));
+        }
+        gameStatusLabel.setText("Game Over!");
+        gameStatusLabel.setForeground(Color.RED);
+        pauseButton.setEnabled(false);
+        world.setGameOver(true);
+        world.stop();
     }
 
     public static void main(String[] args) {

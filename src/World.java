@@ -21,6 +21,11 @@ public class World extends Observable {
     private Boolean isLockInput;
 
     /**
+     * Mark the state when the game is in game over state.
+     */
+    private Boolean isGameOver;
+
+    /**
      * Thread that use to always update the game time.
      */
     private Thread thread;
@@ -36,6 +41,8 @@ public class World extends Observable {
     public World() {
         this.tick = 0;
         this.isRunning = true;
+        this.isLockInput = false;
+        this.isGameOver = false;
     }
 
     /**
@@ -148,5 +155,13 @@ public class World extends Observable {
      */
     public void unlockInput() {
         isLockInput = false;
+    }
+
+    public Boolean getGameOver() {
+        return isGameOver;
+    }
+
+    public void setGameOver(Boolean gameOver) {
+        isGameOver = gameOver;
     }
 }
