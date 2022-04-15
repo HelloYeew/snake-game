@@ -74,14 +74,21 @@ public class Snake {
      * Grow the snake by adding a new position to the end of the body.
      */
     public void grow() {
-        // Add a body part to the end of the snake
-        // Depending on the direction and its tail
-        // TODO: This still not working properly in some cases
-        switch (this.direction) {
-            case LEFT -> this.body.add(new Position(this.body.get(this.body.size() - 1).getX(), this.body.get(this.body.size() - 1).getY() + 1));
-            case RIGHT -> this.body.add(new Position(this.body.get(this.body.size() - 1).getX(), this.body.get(this.body.size() - 1).getY() - 1));
-            case UP -> this.body.add(new Position(this.body.get(this.body.size() - 1).getX() + 1, this.body.get(this.body.size() - 1).getY()));
-            case DOWN -> this.body.add(new Position(this.body.get(this.body.size() - 1).getX() - 1, this.body.get(this.body.size() - 1).getY()));
+        // It must check the direction of the two last parts alignments and add the new part accordingly
+        Position lastPart = this.body.get(this.body.size() - 1);
+        Position secondLastPart = this.body.get(this.body.size() - 2);
+        if (lastPart.getX() == secondLastPart.getX()) {
+            // Add a new part to the bottom
+            this.body.add(new Position(lastPart.getX(), lastPart.getY() + 1));
+        } else if (lastPart.getY() == secondLastPart.getY()) {
+            // Add a new part to the right
+            this.body.add(new Position(lastPart.getX() + 1, lastPart.getY()));
+        } else if (lastPart.getX() - secondLastPart.getX() == 1) {
+            // Add a new part to the top
+            this.body.add(new Position(lastPart.getX(), lastPart.getY() - 1));
+        } else {
+            // Add a new part to the left
+            this.body.add(new Position(lastPart.getX() - 1, lastPart.getY()));
         }
     }
 }
