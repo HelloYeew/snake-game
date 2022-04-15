@@ -37,10 +37,14 @@ public class Game extends JFrame implements Observer {
      */
     private PlayfieldUI playfield_ui;
 
+    private JProgressBar lifeBar = new JProgressBar(0, 1000);
+
     /**
      * Label that will be displayed the score to window.
      */
     private JLabel scoreLabel = new JLabel("Score: " + score);
+
+    private JLabel gameStatusLabel = new JLabel("");
 
     /**
      * Button to restart the game.
@@ -59,9 +63,15 @@ public class Game extends JFrame implements Observer {
         // Add score label at the top of the screen
         JPanel topPanel = new JPanel();
         topPanel.setBackground(Color.BLACK);
-        topPanel.setLayout(new FlowLayout());
+        topPanel.setLayout(new GridLayout(1, 3));
+        topPanel.add(lifeBar);
         topPanel.add(scoreLabel);
+        topPanel.add(gameStatusLabel);
         scoreLabel.setForeground(Color.WHITE);
+        scoreLabel.setFont(new Font("Arial", Font.BOLD, 20));
+        scoreLabel.setHorizontalAlignment(JLabel.CENTER);
+        gameStatusLabel.setForeground(Color.WHITE);
+        gameStatusLabel.setHorizontalAlignment(SwingConstants.RIGHT);
         add(topPanel, BorderLayout.NORTH);
 
         // Add restart button at the bottom of the screen
@@ -105,7 +115,6 @@ public class Game extends JFrame implements Observer {
      * The class that represent the playfield UI that will be displayed to the window.
      */
     class PlayfieldUI extends JPanel {
-
         /**
          * The real pixel size of the grid.
          */
@@ -116,7 +125,6 @@ public class Game extends JFrame implements Observer {
          */
         public PlayfieldUI() {
             setPreferredSize(new Dimension(PLAYFIELD_SIZE * CELL_SIZE, PLAYFIELD_SIZE * CELL_SIZE));
-            addKeyListener(new SnakeController());
         }
 
         @Override
@@ -191,6 +199,9 @@ public class Game extends JFrame implements Observer {
             if (e.getKeyCode() == 192) {
                 // 192 is the keycode for the tilde key (~ key)
                 restartGame();
+            } else if (e.getKeyCode() == KeyEvent.VK_SPACE) {
+                // Space key is the pause key
+                pauseGame();
             }
         }
     }
@@ -210,19 +221,18 @@ public class Game extends JFrame implements Observer {
         }
         if (playfield.isCollisionToWall()) {
             JOptionPane.showMessageDialog(this, "Game Over!", "You hit the wall!", JOptionPane.WARNING_MESSAGE);
-            // For debugging purpose
-            // System.out.println("Snake body list :");
-            // for (int i = 0; i < playfield.snake.length(); i++) {
-            //     System.out.println(playfield.snake.body.get(i));
-            // }
+            System.out.println("Snake body list :");
+            for (int i = 0; i < playfield.snake.length(); i++) {
+                System.out.println(playfield.snake.body.get(i));
+            }
             world.stop();
         } else if (playfield.isCollisionItself()) {
             JOptionPane.showMessageDialog(this, "Game Over!", "You hit yourself!", JOptionPane.WARNING_MESSAGE);
             // For debugging purpose
-            // System.out.println("Snake body list :");
-            // for (int i = 0; i < playfield.snake.length(); i++) {
-            //    System.out.println(playfield.snake.body.get(i));
-            // }
+            System.out.println("Snake body list :");
+            for (int i = 0; i < playfield.snake.length(); i++) {
+                System.out.println(playfield.snake.body.get(i));
+            }
             world.stop();
         }
         world.unlockInput();
@@ -235,6 +245,22 @@ public class Game extends JFrame implements Observer {
     public void startGame() {
         world.start();
         setVisible(true);
+    }
+
+    /**
+     * Pause the game.
+     */
+    public void pauseGame() {
+        if (world.getRunning()) {
+            world.stop();
+            world.lockInput();
+            gameStatusLabel.setText("Game Paused");
+            gameStatusLabel.setForeground(Color.GREEN);
+        } else {
+            world.continueGame();
+            world.unlockInput();
+            gameStatusLabel.setText("");
+        }
     }
 
     /**

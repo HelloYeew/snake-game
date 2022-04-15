@@ -61,14 +61,30 @@ public class World extends Observable {
     }
 
     /**
-     * Mark isRunning to false to pause the game and prevent the thread from updating the game time.
+     * Get the running state of the game.
+     * @return The running state of the game.
+     */
+    public Boolean getRunning() {
+        return isRunning;
+    }
+
+    /**
+     * Set the running state of the game.
+     * @param running The running state of the game that you want to set.
+     */
+    public void setRunning(Boolean running) {
+        isRunning = running;
+    }
+
+    /**
+     * Mark isRunning to true to continue the game and allow the thread to update the game time.
      */
     public void continueGame() {
         this.isRunning = true;
     }
 
     /**
-     * Mark isOver to true to stop the thread from updating the game time.
+     * Mark isRunning to false to pause the game and prevent the thread from updating the game time.
      */
     public void stop() {
         this.isRunning = false;
