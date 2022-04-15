@@ -22,17 +22,18 @@ public class Playfield {
     /**
      * Constructor of the playfield.
      */
-    public Playfield(int size) {
+    public Playfield(int size, int life_max) {
         this.size = size;
-        initSnake();
+        initSnake(life_max);
         randomFruit();
     }
 
     /**
      * Initialize the snake in the playfield and set the spawn position to the middle of the playfield.
      */
-    private void initSnake() {
+    private void initSnake(int life_max) {
         snake = new Snake();
+        snake.life = life_max;
         int middle = size / 2;
         // Normally the snake game start with snake's head at the middle of the playfield
         // and the snake's body is at the left of the head with 3 width.

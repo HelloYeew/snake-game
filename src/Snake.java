@@ -16,12 +16,18 @@ public class Snake {
     private SnakeDirection direction;
 
     /**
+     * The snake life.
+     */
+    public int life;
+
+    /**
      * Constructor of the snake.
      * Normally the snake is created with right direction.
      */
     public Snake() {
         this.direction = SnakeDirection.RIGHT;
         this.body = new ArrayList<>();
+        this.life = 0;
     }
 
     /**

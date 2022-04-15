@@ -19,7 +19,6 @@ public class Game extends JFrame implements Observer {
 
     /**
      * Snake full life.
-     * TODO: This should move to snake?
      */
     public int LIFE_MAX = 100;
 
@@ -32,8 +31,6 @@ public class Game extends JFrame implements Observer {
      * The score of the game. Update when the snake eats a fruit.
      */
     private int score = 0;
-
-    private int life = LIFE_MAX;
 
     /**
      * The world object that act as the observer to update the time in the game.
@@ -88,7 +85,7 @@ public class Game extends JFrame implements Observer {
         lifeBar.setValue(LIFE_MAX);
         lifeBar.setForeground(Color.MAGENTA);
         lifeBar.setStringPainted(true);
-        lifeBar.setString(String.valueOf(lifeBar.getValue()));
+        lifeBar.setString(LIFE_MAX + " / " + LIFE_MAX);
         scoreLabel.setForeground(Color.WHITE);
         scoreLabel.setFont(new Font("Arial", Font.BOLD, 20));
         scoreLabel.setHorizontalAlignment(JLabel.CENTER);
@@ -107,7 +104,7 @@ public class Game extends JFrame implements Observer {
 
         // Add playfield to the center of the screen
         addKeyListener(new SnakeController());
-        playfield = new Playfield(PLAYFIELD_SIZE);
+        playfield = new Playfield(PLAYFIELD_SIZE, LIFE_MAX);
         playfield_ui = new PlayfieldUI();
         world = new World();
         world.addObserver(this);
@@ -241,7 +238,6 @@ public class Game extends JFrame implements Observer {
                 restartGame();
             } else if (e.getKeyCode() == KeyEvent.VK_SPACE) {
                 // Space key is the pause key
-                // TODO: Spam space on collide to wall or itself still can make the game continue. Must make isGameOver flag to prevent this.
                 if (!world.getGameOver()) {
                     pauseGame();
                 }
@@ -253,13 +249,13 @@ public class Game extends JFrame implements Observer {
     public void update(Observable o, Object arg) {
         // Update snake's life
         // The life need to update before game over detection
-        if (life - LIFE_DRAIN <= 0) {
-            life = 0;
+        if (playfield.snake.life - LIFE_DRAIN <= 0) {
+            playfield.snake.life = 0;
         } else {
-            life -= LIFE_DRAIN;
+            playfield.snake.life -= LIFE_DRAIN;
         }
-        lifeBar.setValue(life);
-        lifeBar.setString(life + " / " + LIFE_MAX);
+        lifeBar.setValue(playfield.snake.life);
+        lifeBar.setString(playfield.snake.life + " / " + LIFE_MAX);
         // Check if the game is over
         if (playfield.isCollisionToWall()) {
             JOptionPane.showMessageDialog(this, "Game Over!", "You hit the wall!", JOptionPane.WARNING_MESSAGE);
@@ -281,7 +277,7 @@ public class Game extends JFrame implements Observer {
             score++;
             scoreLabel.setText("Score: " + score);
             System.out.println("Score: " + score);
-            life = LIFE_MAX;
+            playfield.snake.life = LIFE_MAX;
         }
         world.unlockInput();
         repaint();
@@ -299,13 +295,13 @@ public class Game extends JFrame implements Observer {
      * Pause the game.
      */
     public void pauseGame() {
-        if (world.getRunning() && life > 0) {
+        if (world.getRunning() && playfield.snake.life > 0) {
             world.stop();
             world.lockInput();
             gameStatusLabel.setText("Game Paused");
             gameStatusLabel.setForeground(Color.GREEN);
             pauseButton.setText("Resume");
-        } else if (life <= 0) {
+        } else if (playfield.snake.life <= 0) {
             // To prevent the game from continue running when the life is 0
             world.stop();
         } else {
@@ -321,8 +317,8 @@ public class Game extends JFrame implements Observer {
      */
     public void restartGame() {
         gameStatusLabel.setText("");
-        life = LIFE_MAX;
-        playfield = new Playfield(PLAYFIELD_SIZE);
+        playfield.snake.life = LIFE_MAX;
+        playfield = new Playfield(PLAYFIELD_SIZE, LIFE_MAX);
         score = 0;
         scoreLabel.setText("Score: " + score);
         pauseButton.setEnabled(true);
