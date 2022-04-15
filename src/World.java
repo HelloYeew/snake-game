@@ -108,6 +108,13 @@ public class World extends Observable {
     }
 
     /**
+     * Reset the game time back to 0.
+     */
+    public void resetTick() {
+        this.tick = 0;
+    }
+
+    /**
      * Set delay between each update of the game time.
      */
     public void setDelayed(long delayed) {

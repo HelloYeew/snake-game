@@ -15,12 +15,25 @@ public class Game extends JFrame implements Observer {
     /**
      * The number of the rows and columns of the game board.
      */
-    public int PLAYFIELD_SIZE = 20;
+    public int PLAYFIELD_SIZE = 30;
+
+    /**
+     * Snake full life.
+     * TODO: This should move to snake?
+     */
+    public int LIFE_MAX = 100;
+
+    /**
+     * Life drain rate per game tick.
+     */
+    public int LIFE_DRAIN = 1;
 
     /**
      * The score of the game. Update when the snake eats a fruit.
      */
     private int score = 0;
+
+    private int life = LIFE_MAX;
 
     /**
      * The world object that act as the observer to update the time in the game.
@@ -37,13 +50,19 @@ public class Game extends JFrame implements Observer {
      */
     private PlayfieldUI playfield_ui;
 
-    private JProgressBar lifeBar = new JProgressBar(0, 1000);
+    /**
+     * The progress bar that will display the time since the last fruit was eaten.
+     */
+    private JProgressBar lifeBar = new JProgressBar(0, 100);
 
     /**
      * Label that will be displayed the score to window.
      */
     private JLabel scoreLabel = new JLabel("Score: " + score);
 
+    /**
+     * Label to show the game status like game over or game paused.
+     */
     private JLabel gameStatusLabel = new JLabel("");
 
     /**
@@ -51,14 +70,13 @@ public class Game extends JFrame implements Observer {
      */
     private JButton restartButton = new JButton("Restart");
 
+    /**
+     * Button to pause the game.
+     */
+    private JButton pauseButton = new JButton("Pause");
+
     public Game() {
         super("Snake");
-        addKeyListener(new SnakeController());
-        playfield = new Playfield(PLAYFIELD_SIZE);
-        playfield_ui = new PlayfieldUI();
-        world = new World();
-        world.addObserver(this);
-        add(playfield_ui);
 
         // Add score label at the top of the screen
         JPanel topPanel = new JPanel();
@@ -67,6 +85,10 @@ public class Game extends JFrame implements Observer {
         topPanel.add(lifeBar);
         topPanel.add(scoreLabel);
         topPanel.add(gameStatusLabel);
+        lifeBar.setValue(LIFE_MAX);
+        lifeBar.setForeground(Color.MAGENTA);
+        lifeBar.setStringPainted(true);
+        lifeBar.setString(String.valueOf(lifeBar.getValue()));
         scoreLabel.setForeground(Color.WHITE);
         scoreLabel.setFont(new Font("Arial", Font.BOLD, 20));
         scoreLabel.setHorizontalAlignment(JLabel.CENTER);
@@ -79,8 +101,17 @@ public class Game extends JFrame implements Observer {
         bottomPanel.setBackground(Color.BLACK);
         bottomPanel.setLayout(new FlowLayout());
         bottomPanel.add(restartButton);
+        bottomPanel.add(pauseButton);
         add(bottomPanel, BorderLayout.SOUTH);
         initButtons();
+
+        // Add playfield to the center of the screen
+        addKeyListener(new SnakeController());
+        playfield = new Playfield(PLAYFIELD_SIZE);
+        playfield_ui = new PlayfieldUI();
+        world = new World();
+        world.addObserver(this);
+        add(playfield_ui);
 
         // Since stupid Java cannot use KeyListener with ActionListener
         // But I found a way from Japanese StackOverflow (teratail)
@@ -105,7 +136,16 @@ public class Game extends JFrame implements Observer {
             @Override
             public void actionPerformed(ActionEvent e) {
                 restartGame();
-                // request to focus on the game window to avoid the annoying
+                // request to focus on the game window to avoid it to focus to button
+                requestFocus();
+            }
+        });
+
+        pauseButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                pauseGame();
+                // request to focus on the game window to avoid it to focus to button
                 requestFocus();
             }
         });
@@ -174,19 +214,19 @@ public class Game extends JFrame implements Observer {
             if (!world.getLockInput()) {
                 // From real snake game:
                 // Player cannot move in opposite direction
-                if (e.getKeyCode() == KeyEvent.VK_UP) {
+                if (e.getKeyCode() == KeyEvent.VK_UP || e.getKeyCode() == KeyEvent.VK_W) {
                     if (playfield.snake.getDirection() != SnakeDirection.DOWN) {
                         playfield.snake.setDirection(SnakeDirection.UP);
                     }
-                } else if (e.getKeyCode() == KeyEvent.VK_DOWN) {
+                } else if (e.getKeyCode() == KeyEvent.VK_DOWN || e.getKeyCode() == KeyEvent.VK_S) {
                     if (playfield.snake.getDirection() != SnakeDirection.UP) {
                         playfield.snake.setDirection(SnakeDirection.DOWN);
                     }
-                } else if (e.getKeyCode() == KeyEvent.VK_LEFT) {
+                } else if (e.getKeyCode() == KeyEvent.VK_LEFT || e.getKeyCode() == KeyEvent.VK_A) {
                     if (playfield.snake.getDirection() != SnakeDirection.RIGHT) {
                         playfield.snake.setDirection(SnakeDirection.LEFT);
                     }
-                } else if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
+                } else if (e.getKeyCode() == KeyEvent.VK_RIGHT || e.getKeyCode() == KeyEvent.VK_D) {
                     if (playfield.snake.getDirection() != SnakeDirection.LEFT) {
                         playfield.snake.setDirection(SnakeDirection.RIGHT);
                     }
@@ -208,6 +248,45 @@ public class Game extends JFrame implements Observer {
 
     @Override
     public void update(Observable o, Object arg) {
+        // Update snake's life
+        // The life need to update before game over detection
+        if (life - LIFE_DRAIN <= 0) {
+            life = 0;
+        } else {
+            life -= LIFE_DRAIN;
+        }
+        lifeBar.setValue(life);
+        lifeBar.setString(life + " / " + LIFE_MAX);
+        // Check if the game is over
+        // TODO: Fix these duplicate code
+        if (playfield.isCollisionToWall()) {
+            JOptionPane.showMessageDialog(this, "Game Over!", "You hit the wall!", JOptionPane.WARNING_MESSAGE);
+            System.out.println("Snake body list :");
+            for (int i = 0; i < playfield.snake.length(); i++) {
+                System.out.println(playfield.snake.body.get(i));
+            }
+            gameStatusLabel.setText("Game Over!");
+            gameStatusLabel.setForeground(Color.RED);
+            pauseButton.setEnabled(false);
+            world.stop();
+        } else if (playfield.isCollisionItself()) {
+            JOptionPane.showMessageDialog(this, "Game Over!", "You hit yourself!", JOptionPane.WARNING_MESSAGE);
+            // For debugging purpose
+            System.out.println("Snake body list :");
+            for (int i = 0; i < playfield.snake.length(); i++) {
+                System.out.println(playfield.snake.body.get(i));
+            }
+            gameStatusLabel.setText("Game Over!");
+            gameStatusLabel.setForeground(Color.RED);
+            pauseButton.setEnabled(false);
+            world.stop();
+        } else if (lifeBar.getValue() <= 0) {
+            JOptionPane.showMessageDialog(this, "Game Over!", "You ran out of life!", JOptionPane.WARNING_MESSAGE);
+            gameStatusLabel.setText("Game Over!");
+            gameStatusLabel.setForeground(Color.RED);
+            pauseButton.setEnabled(false);
+            world.stop();
+        }
         playfield_ui.repaint();
         playfield.moveSnake();
         if (playfield.isEatenFood()) {
@@ -218,22 +297,7 @@ public class Game extends JFrame implements Observer {
             score++;
             scoreLabel.setText("Score: " + score);
             System.out.println("Score: " + score);
-        }
-        if (playfield.isCollisionToWall()) {
-            JOptionPane.showMessageDialog(this, "Game Over!", "You hit the wall!", JOptionPane.WARNING_MESSAGE);
-            System.out.println("Snake body list :");
-            for (int i = 0; i < playfield.snake.length(); i++) {
-                System.out.println(playfield.snake.body.get(i));
-            }
-            world.stop();
-        } else if (playfield.isCollisionItself()) {
-            JOptionPane.showMessageDialog(this, "Game Over!", "You hit yourself!", JOptionPane.WARNING_MESSAGE);
-            // For debugging purpose
-            System.out.println("Snake body list :");
-            for (int i = 0; i < playfield.snake.length(); i++) {
-                System.out.println(playfield.snake.body.get(i));
-            }
-            world.stop();
+            life = LIFE_MAX;
         }
         world.unlockInput();
         repaint();
@@ -251,25 +315,35 @@ public class Game extends JFrame implements Observer {
      * Pause the game.
      */
     public void pauseGame() {
-        if (world.getRunning()) {
+        if (world.getRunning() && life > 0) {
             world.stop();
             world.lockInput();
             gameStatusLabel.setText("Game Paused");
             gameStatusLabel.setForeground(Color.GREEN);
+            pauseButton.setText("Resume");
+        } else if (life <= 0) {
+            // To prevent the game from continue running when the life is 0
+            world.stop();
         } else {
             world.continueGame();
             world.unlockInput();
             gameStatusLabel.setText("");
+            pauseButton.setText("Pause");
         }
     }
 
     /**
-     * Restart the game.
+     * Restart the game by resetting everything to the initial state.
      */
     public void restartGame() {
+        gameStatusLabel.setText("");
+        life = LIFE_MAX;
         playfield = new Playfield(PLAYFIELD_SIZE);
         score = 0;
         scoreLabel.setText("Score: " + score);
+        pauseButton.setEnabled(true);
+        pauseButton.setText("Pause");
+        world.resetTick();
         world.continueGame();
         repaint();
     }
