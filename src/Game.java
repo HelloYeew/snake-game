@@ -15,7 +15,7 @@ public class Game extends JFrame implements Observer {
     /**
      * The number of the rows and columns of the game board.
      */
-    public int PLAYFIELD_SIZE = 30;
+    public int PLAYFIELD_SIZE = 25;
 
     /**
      * Snake full life.
@@ -29,6 +29,7 @@ public class Game extends JFrame implements Observer {
 
     /**
      * The score of the game. Update when the snake eats a fruit.
+     * TODO: Proposal on get score based on current snake's life on each fruit collected.
      */
     private int score = 0;
 
@@ -247,26 +248,6 @@ public class Game extends JFrame implements Observer {
 
     @Override
     public void update(Observable o, Object arg) {
-        // Update snake's life
-        // The life need to update before game over detection
-        if (playfield.snake.life - LIFE_DRAIN <= 0) {
-            playfield.snake.life = 0;
-        } else {
-            playfield.snake.life -= LIFE_DRAIN;
-        }
-        lifeBar.setValue(playfield.snake.life);
-        lifeBar.setString(playfield.snake.life + " / " + LIFE_MAX);
-        // Check if the game is over
-        if (playfield.isCollisionToWall()) {
-            JOptionPane.showMessageDialog(this, "Game Over!", "You hit the wall!", JOptionPane.WARNING_MESSAGE);
-            setToGameOverState();
-        } else if (playfield.isCollisionItself()) {
-            JOptionPane.showMessageDialog(this, "Game Over!", "You hit yourself!", JOptionPane.WARNING_MESSAGE);
-            setToGameOverState();
-        } else if (lifeBar.getValue() <= 0) {
-            JOptionPane.showMessageDialog(this, "Game Over!", "You ran out of life!", JOptionPane.WARNING_MESSAGE);
-            setToGameOverState();
-        }
         playfield_ui.repaint();
         playfield.moveSnake();
         if (playfield.isEatenFood()) {
@@ -278,6 +259,26 @@ public class Game extends JFrame implements Observer {
             scoreLabel.setText("Score: " + score);
             System.out.println("Score: " + score);
             playfield.snake.life = LIFE_MAX;
+        }
+        // Update snake's life
+        // The life need to update before game over detection
+        if (playfield.snake.life - LIFE_DRAIN <= 0) {
+            playfield.snake.life = 0;
+        } else {
+            playfield.snake.life -= LIFE_DRAIN;
+        }
+        lifeBar.setValue(playfield.snake.life);
+        lifeBar.setString(playfield.snake.life + " / " + LIFE_MAX);
+        // Check if the game is over
+        if (playfield.isCollisionToWall()) {
+            JOptionPane.showMessageDialog(this, "You hit the wall!", "Game Over!", JOptionPane.WARNING_MESSAGE);
+            setToGameOverState();
+        } else if (playfield.isCollisionItself()) {
+            JOptionPane.showMessageDialog(this, "You hit yourself!", "Game Over!", JOptionPane.WARNING_MESSAGE);
+            setToGameOverState();
+        } else if (lifeBar.getValue() <= 0) {
+            JOptionPane.showMessageDialog(this, "You ran out of life!", "Game Over!", JOptionPane.WARNING_MESSAGE);
+            setToGameOverState();
         }
         world.unlockInput();
         repaint();
