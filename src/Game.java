@@ -25,11 +25,10 @@ public class Game extends JFrame implements Observer {
     /**
      * Life drain rate per game tick.
      */
-    public int LIFE_DRAIN = 4;
+    public int LIFE_DRAIN = 2;
 
     /**
      * The score of the game. Update when the snake eats a fruit.
-     * TODO: Proposal on get score based on current snake's life on each fruit collected.
      */
     private int score = 0;
 

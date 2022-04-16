@@ -1,7 +1,8 @@
 import java.util.Observable;
 
 /**
- * The class that act as the observer of the game. Ir is responsible for updating the game time.
+ * The class that act as the observer of the game. It is responsible for updating the game time and
+ * store some game state.
  */
 public class World extends Observable {
 
@@ -33,7 +34,7 @@ public class World extends Observable {
     /**
      * Delay between each update of the game time in milliseconds.
      */
-    private long delayed = 200;
+    private long delayed = 100;
 
     /**
      * The constructor of the class.
