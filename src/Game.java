@@ -4,6 +4,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -25,7 +28,7 @@ public class Game extends JFrame implements Observer {
     /**
      * Life drain rate per game tick.
      */
-    public int LIFE_DRAIN = 2;
+    public int LIFE_DRAIN = 1;
 
     /**
      * The score of the game. Update when the snake eats a fruit.
@@ -82,10 +85,16 @@ public class Game extends JFrame implements Observer {
         topPanel.add(lifeBar);
         topPanel.add(scoreLabel);
         topPanel.add(gameStatusLabel);
-        lifeBar.setValue(LIFE_MAX);
-        lifeBar.setForeground(Color.MAGENTA);
-        lifeBar.setStringPainted(true);
-        lifeBar.setString(LIFE_MAX + " / " + LIFE_MAX);
+        // We allow the user to set life drain rate to 0 to disable life drain
+        // So just hide the life drain bar too
+        if (LIFE_DRAIN > 0) {
+            lifeBar.setValue(LIFE_MAX);
+            lifeBar.setForeground(Color.MAGENTA);
+            lifeBar.setStringPainted(true);
+            lifeBar.setString(LIFE_MAX + " / " + LIFE_MAX);
+        } else {
+            lifeBar.setVisible(false);
+        }
         scoreLabel.setForeground(Color.WHITE);
         scoreLabel.setFont(new Font("Arial", Font.BOLD, 20));
         scoreLabel.setHorizontalAlignment(JLabel.CENTER);
@@ -157,11 +166,22 @@ public class Game extends JFrame implements Observer {
          */
         public int CELL_SIZE = 20;
 
+        private Image backgroundSource = new ImageIcon("imgs/grass.jpg").getImage();
+
+        private Image fruitSource = new ImageIcon("imgs/apple.png").getImage();
+
         /**
          * The constructor of the UI. Will set the size to the preferred size and add the listener of the snake.
          */
         public PlayfieldUI() {
             setPreferredSize(new Dimension(PLAYFIELD_SIZE * CELL_SIZE, PLAYFIELD_SIZE * CELL_SIZE));
+            setBackground(Color.BLACK);
+            // Add background image and make it fit the size of the playfield
+            ImageIcon backgroundImageIcon = new ImageIcon(backgroundSource);
+            Image resizedBackgroundImage = backgroundImageIcon.getImage().getScaledInstance(PLAYFIELD_SIZE * CELL_SIZE, PLAYFIELD_SIZE * CELL_SIZE, java.awt.Image.SCALE_SMOOTH);
+            backgroundImageIcon = new ImageIcon(resizedBackgroundImage);
+            JLabel background = new JLabel(backgroundImageIcon);
+            add(background);
         }
 
         @Override
@@ -186,8 +206,7 @@ public class Game extends JFrame implements Observer {
 
             // paint the fruit position
             if (playfield.getFruitPosition().getX() == row && playfield.getFruitPosition().getY() == col) {
-                g.setColor(Color.RED);
-                g.fillRect(x, y, CELL_SIZE, CELL_SIZE);
+                g.drawImage(fruitSource, x, y, CELL_SIZE, CELL_SIZE, this);
             }
 
             // paint the snake position
@@ -270,13 +289,13 @@ public class Game extends JFrame implements Observer {
         lifeBar.setString(playfield.snake.life + " / " + LIFE_MAX);
         // Check if the game is over
         if (playfield.isCollisionToWall()) {
-            JOptionPane.showMessageDialog(this, "You hit the wall!", "Game Over!", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(this, "You hit the wall!\nScore : " + score, "Game Over!", JOptionPane.WARNING_MESSAGE);
             setToGameOverState();
         } else if (playfield.isCollisionItself()) {
-            JOptionPane.showMessageDialog(this, "You hit yourself!", "Game Over!", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(this, "You hit yourself!\nScore : " + score, "Game Over!", JOptionPane.WARNING_MESSAGE);
             setToGameOverState();
         } else if (lifeBar.getValue() <= 0) {
-            JOptionPane.showMessageDialog(this, "You ran out of life!", "Game Over!", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(this, "You ran out of life!\nScore : " + score, "Game Over!", JOptionPane.WARNING_MESSAGE);
             setToGameOverState();
         }
         world.unlockInput();
@@ -344,8 +363,39 @@ public class Game extends JFrame implements Observer {
         world.stop();
     }
 
+    public Boolean checkFirstRun() {
+        System.out.println("Checking first run...");
+        String INITIAL_ERROR_MESSAGE = "The game is not configured properly.\n";
+        String error_message = INITIAL_ERROR_MESSAGE;
+        if (LIFE_DRAIN < 0) {
+            error_message += "- LIFE_DRAIN must be greater than 0.\n";
+        }
+        if (LIFE_MAX < 0) {
+            error_message += "- Please set LIFE_MAX to a positive value.\n";
+        }
+        if (error_message.equals(INITIAL_ERROR_MESSAGE)) {
+            // No error
+            System.out.println("No error found.");
+            return true;
+        } else {
+            error_message += "Please fix these and restart the game.";
+            JOptionPane.showMessageDialog(this, error_message, "Error", JOptionPane.ERROR_MESSAGE);
+            System.out.println(error_message);
+            return false;
+        }
+    }
+
     public static void main(String[] args) {
        Game game = new Game();
-       game.startGame();
+       if (game.checkFirstRun()) {
+           game.startGame();
+       } else {
+           try {
+               Desktop.getDesktop().browse(new URI("https://www.youtube.com/watch?v=dQw4w9WgXcQ"));
+           } catch (IOException | URISyntaxException e) {
+               throw new RuntimeException(e);
+           }
+           System.exit(0);
+       }
     }
 }
