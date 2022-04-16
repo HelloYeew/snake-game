@@ -176,7 +176,6 @@ public class Game extends JFrame implements Observer {
         public PlayfieldUI() {
             setPreferredSize(new Dimension(PLAYFIELD_SIZE * CELL_SIZE, PLAYFIELD_SIZE * CELL_SIZE));
             setBackground(Color.BLACK);
-            // Add background image and make it fit the size of the playfield
             ImageIcon backgroundImageIcon = new ImageIcon(backgroundSource);
             Image resizedBackgroundImage = backgroundImageIcon.getImage().getScaledInstance(PLAYFIELD_SIZE * CELL_SIZE, PLAYFIELD_SIZE * CELL_SIZE, java.awt.Image.SCALE_SMOOTH);
             backgroundImageIcon = new ImageIcon(resizedBackgroundImage);
@@ -363,6 +362,10 @@ public class Game extends JFrame implements Observer {
         world.stop();
     }
 
+    /**
+     * Check that the game is configured properly before starting the game.
+     * @return true if the game is configured properly, false otherwise.
+     */
     public Boolean checkFirstRun() {
         System.out.println("Checking first run...");
         String INITIAL_ERROR_MESSAGE = "The game is not configured properly.\n";
